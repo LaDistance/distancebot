@@ -91,10 +91,10 @@ async def on_message(message):
         if len(message_info)>2:
             channelname = " ".join(message_info[1:])
         message_info = [message_info[0], channelname]
-        
+
         initial_channel = get_voice_channel(message.author)
         destination_channel = find_voice_channel(message_info[1])
         for member in initial_channel.members:
             await member.edit(voice_channel = destination_channel)
         await message.channel.send("Déplacement de toutes les personnes du channel {} vers le channel {}.".format(initial_channel, destination_channel))
-client.run('NjkxMzE1MDA2NTE5OTAyMjYw.XneLVg.3JzgP0TwmpN8lDjwcvJmJEsyVUs')
+client.run('NjkxMzE1MDA2NTE5OTAyMjYw.Xnptzw.Ry09mOFkm9-hL0y1v-V6cnSKdMQ')
