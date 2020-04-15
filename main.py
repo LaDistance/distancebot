@@ -102,7 +102,7 @@ async def on_message(message):
     elif message.content.startswith("!clearplays"):
         await message.channel.send("Suppression de tous les !play dans ce channel.")
         async for msg in message.channel.history(limit=None):
-            if msg.content.startswith("!play") or msg.author.id == 140201293670121472: # ID of the Rythm bot
+            if msg.content.startswith("!play") or msg.author.id == 691315006519902260: # ID of the Rythm bot
                 print("Deleted this message : {}".format(msg.content))
                 await msg.delete()
         await message.channel.send("Messages supprimés.")
