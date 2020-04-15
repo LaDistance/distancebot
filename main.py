@@ -102,5 +102,5 @@ async def on_message(message):
         messages = [msg async for msg in client.logs_from(message.channel) if msg.content.startswith("!play")]
         await client.delete_messages(messages)
         await message.channel.send("Suppression de tous les !play dans ce channel s'ils ont moins de 14 jours.")
-        
-client.run('NjkxMzE1MDA2NTE5OTAyMjYw.Xnptzw.Ry09mOFkm9-hL0y1v-V6cnSKdMQ')
+
+client.run('NjkxMzE1MDA2NTE5OTAyMjYw.XpdShw.OsPP7x_aCyphYTeHFx234SlA8kM')
