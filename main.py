@@ -102,6 +102,7 @@ async def on_message(message):
         await message.channel.send("Suppression de tous les !play dans ce channel.")
         async for msg in message.channel.history():
             if msg.content.startswith("!play") or msg.author.name.lower()=="La Rythmance".lower():
+                print("Deleted this message : {}".format(msg.content))
                 await msg.delete()
         await message.channel.send("Messages supprimés.")
 
