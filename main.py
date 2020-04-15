@@ -37,13 +37,14 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    print('Message from {0.author}: {0.content}'.format(message))
+    print('Message from {0.author} (id : {0.author.id}): {0.content}'.format(message))
     if "bonjour bot" in message.content.lower():
         await message.channel.send("Bonjour !")
 
 
     elif "!getguild" in message.content.lower():
         print(client.guilds)
+
 
     elif message.content.lower().startswith("!tg"):
         message_info = message.content.split(" ")
@@ -101,7 +102,7 @@ async def on_message(message):
     elif message.content.startswith("!clearplays"):
         await message.channel.send("Suppression de tous les !play dans ce channel.")
         async for msg in message.channel.history(limit=None):
-            if msg.content.startswith("!play") or msg.author=="Rythm#3722":
+            if msg.content.startswith("!play") or msg.author.id == 140201293670121472: # ID of the Rythm bot
                 print("Deleted this message : {}".format(msg.content))
                 await msg.delete()
         await message.channel.send("Messages supprimés.")
