@@ -97,4 +97,10 @@ async def on_message(message):
         for member in initial_channel.members:
             await member.edit(voice_channel = destination_channel)
         await message.channel.send("Déplacement de toutes les personnes du channel {} vers le channel {}.".format(initial_channel, destination_channel))
+
+    elif message.content.startswith("!clearplays"):
+        messages = [msg async for msg in client.logs_from(message.channel) if msg.content.startswith("!play")]
+        await client.delete_messages(messages)
+        await message.channel.send("Suppression de tous les !play dans ce channel s'ils ont moins de 14 jours.")
+        
 client.run('NjkxMzE1MDA2NTE5OTAyMjYw.Xnptzw.Ry09mOFkm9-hL0y1v-V6cnSKdMQ')
