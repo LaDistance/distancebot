@@ -108,4 +108,4 @@ async def on_message(message):
         await message.channel.send("Messages supprimés.")
 
 
-client.run('token goes here')
+client.run('token here')
