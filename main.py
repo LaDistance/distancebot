@@ -127,5 +127,6 @@ async def on_message(message):
                 await msg.delete()
         await message.channel.send("Messages supprimés.")
 
-
-client.run('token goes here')
+if __name__ == '__main__':
+    import config
+    client.run(config.token)
