@@ -23,6 +23,7 @@ def find_text_channel(name):
         if channel.name == name:
             return channel
     return None
+
 conditions = {'tg':{
                 'max_time':15,
                 'min_time':2,
@@ -46,11 +47,11 @@ async def on_voice_state_update(member, before, after):
     if text_channel_id is not None:
         if before.channel != after.channel:
             if after.channel is None:
-                await client.guilds[0].text_channels[3].send("{0} s'est déconnecté du channel {1}.".format(str(member), before.channel))
+                await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1}".format(member.nick, before.channel))
             elif before.channel is None:
-                await client.guilds[0].text_channels[3].send("{0} s'est connecté sur le channel {1}.".format(str(member), after.channel))
+                await client.guilds[0].text_channels[3].send("**{0}** : :green_circle: {1}".format(member.nick, after.channel))
             elif before.channel is not None and after.channel is not None:
-                await client.guilds[0].text_channels[3].send("{0} a changé de channel, de {1} vers {2}.".format(str(member), before.channel, after.channel))
+                await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1} -> :green_circle: {2}".format(member.nick, before.channel, after.channel))
 
 @client.event
 async def on_message(message):
