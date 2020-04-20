@@ -24,6 +24,12 @@ def find_text_channel(name):
             return channel
     return None
 
+def determine_nickname(member):
+    if member.nick is None:
+        return str(member)[:-5]
+    return member.nick
+
+
 conditions = {'tg':{
                 'max_time':15,
                 'min_time':2,
@@ -44,14 +50,15 @@ async def on_ready():
 @client.event
 async def on_voice_state_update(member, before, after):
     text_channel_id = find_text_channel("connexions")
+    nickname = determine_nickname(member)
     if text_channel_id is not None:
         if before.channel != after.channel:
             if after.channel is None:
-                await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1}".format(member.nick, before.channel))
+                await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1}".format(nickname, before.channel))
             elif before.channel is None:
-                await client.guilds[0].text_channels[3].send("**{0}** : :green_circle: {1}".format(member.nick, after.channel))
+                await client.guilds[0].text_channels[3].send("**{0}** : :green_circle: {1}".format(nickname, after.channel))
             elif before.channel is not None and after.channel is not None:
-                await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1} -> :green_circle: {2}".format(member.nick, before.channel, after.channel))
+                await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1} -> :green_circle: {2}".format(nickname, before.channel, after.channel))
 
 @client.event
 async def on_message(message):
