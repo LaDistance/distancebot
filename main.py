@@ -18,6 +18,11 @@ def find_voice_channel(name):
             return channel
     return None
 
+def find_text_channel(name):
+    for channel in client.guilds[0].text_channels:
+        if channel.name == name:
+            return channel
+    return None
 conditions = {'tg':{
                 'max_time':15,
                 'min_time':2,
@@ -34,6 +39,18 @@ conditions = {'tg':{
 @client.event
 async def on_ready():
     print('Logged on as {0}!'.format(client.user))
+
+@client.event
+async def on_voice_state_update(member, before, after):
+    text_channel_id = find_text_channel("connexions")
+    if text_channel_id is not None:
+        if before.channel != after.channel:
+            if after.channel is None:
+                await client.guilds[0].text_channels[3].send("{0} s'est déconnecté du channel {1}.".format(str(member), before.channel))
+            elif before.channel is None:
+                await client.guilds[0].text_channels[3].send("{0} s'est connecté sur le channel {1}.".format(str(member), after.channel))
+            elif before.channel is not None and after.channel is not None:
+                await client.guilds[0].text_channels[3].send("{0} a changé de channel, de {1} vers {2}.".format(str(member), before.channel, after.channel))
 
 @client.event
 async def on_message(message):
@@ -95,9 +112,12 @@ async def on_message(message):
 
         initial_channel = get_voice_channel(message.author)
         destination_channel = find_voice_channel(message_info[1])
-        for member in initial_channel.members:
-            await member.edit(voice_channel = destination_channel)
-        await message.channel.send("Déplacement de toutes les personnes du channel {} vers le channel {}.".format(initial_channel, destination_channel))
+        if destination_channel != None:
+            await message.channel.send("Ce channel n'existe pas.")
+        else:
+            for member in initial_channel.members:
+                await member.edit(voice_channel = destination_channel)
+            await message.channel.send("Déplacement de toutes les personnes du channel {} vers le channel {}.".format(initial_channel, destination_channel))
 
     elif message.content.startswith("!clearplays"):
         await message.channel.send("Suppression de tous les !play dans ce channel.")
@@ -108,4 +128,4 @@ async def on_message(message):
         await message.channel.send("Messages supprimés.")
 
 
-client.run('NjkxMzE1MDA2NTE5OTAyMjYw.Xpho8w.ed_Pfi1GhgtJ72uFI6GyA5uY4_Y')
+client.run('token goes here')
