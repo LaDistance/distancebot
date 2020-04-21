@@ -120,7 +120,7 @@ async def on_message(message):
 
         initial_channel = get_voice_channel(message.author)
         destination_channel = find_voice_channel(message_info[1])
-        if destination_channel != None:
+        if destination_channel is None:
             await message.channel.send("Ce channel n'existe pas.")
         else:
             for member in initial_channel.members:
