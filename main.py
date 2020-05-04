@@ -1,7 +1,15 @@
 import discord
+from discord.ext import commands
 import asyncio
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
+cred = credentials.Certificate('la-botance-e472e977a24e.json')
+firebase_admin.initialize_app(cred)
 client = discord.Client()
+
+db = firestore.client()
 
 def get_voice_channel(member):
     for channel in client.guilds[0].voice_channels:
@@ -17,7 +25,11 @@ def find_voice_channel(name):
         if channel.name == name:
             return channel
     return None
-
+def get_member_id(name):
+    for member in client.guilds[0].members:
+        if member.name == name:
+            return member.id
+    return None
 def find_text_channel(name):
     for channel in client.guilds[0].text_channels:
         if channel.name == name:
@@ -28,7 +40,36 @@ def determine_nickname(member):
     if member.nick is None:
         return str(member)[:-5]
     return member.nick
+async def get_dm_channel(member):
+    if member.dm_channel is None:
+        await member.create_dm()
+    return member.dm_channel
+async def update_lg_database():
+    # iterator of users collection
+    users_docs = db.collection(u'extensions').document(u'loup-garance').collection(u'users').stream()
+    text_channel = find_text_channel("inscriptions-loup-garance")
+    # creating list of all registered users
+    async for msg in text_channel.history(limit=1):
+        for reaction in msg.reactions:
+            if reaction.emoji == '👍' :
+                users_discord = await reaction.users().flatten()
+                usernames_discord = [user.name for user in users_discord]
 
+
+    # dirty
+    db_usernames_list = []
+    #First loop : create temp list of existing usernames, but also delete people who unregistered themselves.
+    for user in users_docs:
+        username = user.to_dict()["name"]
+        if username in usernames_discord:
+            db_usernames_list.append(username)
+        else:
+            db.collection(u'extensions').document(u'loup-garance').collection(u'users').document(username).delete()
+    # Second loop : compare usernames with temp list of existing usernames, add user if not in list.
+    for username in usernames_discord:
+        if username not in db_usernames_list:
+            new_user = {u'name': username}
+            db.collection(u'extensions').document(u'loup-garance').collection(u'users').document(username).set(new_user)
 
 conditions = {'tg':{
                 'max_time':15,
@@ -59,17 +100,27 @@ async def on_voice_state_update(member, before, after):
                 await client.guilds[0].text_channels[3].send("**{0}** : :green_circle: {1}".format(nickname, after.channel))
             elif before.channel is not None and after.channel is not None:
                 await client.guilds[0].text_channels[3].send("**{0}** : :red_circle: {1} -> :green_circle: {2}".format(nickname, before.channel, after.channel))
+@client.event
+async def on_raw_reaction_add(payload):
+    print("Caught reaction addition !")
+    print("Payload chan id : {}, loup-garance id : {}".format(payload.channel_id, find_text_channel("inscriptions-loup-garance").id))
+    if payload.channel_id == find_text_channel("inscriptions-loup-garance").id:
+        await update_lg_database()
+        print("Updated Firestore database.")
+
+@client.event
+async def on_raw_reaction_remove(payload):
+    print("Caught reaction removal !")
+    print("Payload chan id : {}, loup-garance id : {}".format(payload.channel_id, find_text_channel("inscriptions-loup-garance").id))
+    if payload.channel_id == find_text_channel("inscriptions-loup-garance").id:
+        await update_lg_database()
+        print("Updated Firestore database.")
 
 @client.event
 async def on_message(message):
     print('Message from {0.author} (id : {0.author.id}): {0.content}'.format(message))
     if "bonjour bot" in message.content.lower():
         await message.channel.send("Bonjour !")
-
-
-    elif "!getguild" in message.content.lower():
-        print(client.guilds)
-
 
     elif message.content.lower().startswith("!tg"):
         message_info = message.content.split(" ")
@@ -135,6 +186,22 @@ async def on_message(message):
                 await msg.delete()
         await message.channel.send("Messages supprimés.")
 
+    elif message.content.startswith("!update"):
+        """ Used for manually updating the users, just in case."""
+        await update_lg_database()
+    elif message.content.startswith("!lg-send"):
+        message_info = message.content.split('"')
+        msg_to_send = message_info[1]
+        # safety : update before sending
+        await update_lg_database()
+        users_docs = db.collection(u'extensions').document(u'loup-garance').collection(u'users').stream()
+        for user in users_docs:
+            username = user.to_dict()["name"]
+            print(f"Username : {username}")
+            member = client.guilds[0].get_member(get_member_id(username))
+            channel = await get_dm_channel(member)
+            await channel.send(msg_to_send)
+            print(f"Sent message to {username}")
 if __name__ == '__main__':
     import config
     client.run(config.token)
