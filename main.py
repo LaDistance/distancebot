@@ -44,6 +44,7 @@ async def get_dm_channel(member):
     if member.dm_channel is None:
         await member.create_dm()
     return member.dm_channel
+
 async def update_lg_database():
     # iterator of users collection
     users_docs = db.collection(u'extensions').document(u'loup-garance').collection(u'users').stream()
@@ -54,7 +55,6 @@ async def update_lg_database():
             if reaction.emoji == '👍' :
                 users_discord = await reaction.users().flatten()
                 usernames_discord = [user.name for user in users_discord]
-
 
     # dirty
     db_usernames_list = []
@@ -70,6 +70,8 @@ async def update_lg_database():
         if username not in db_usernames_list:
             new_user = {u'name': username}
             db.collection(u'extensions').document(u'loup-garance').collection(u'users').document(username).set(new_user)
+
+    print("Updated database")
 
 conditions = {'tg':{
                 'max_time':15,
