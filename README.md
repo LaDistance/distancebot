@@ -1,6 +1,7 @@
 # distancebot
 
 Discord bot meant to simplify or automate some things I had to do as a Discord admin.
+Hosted on Heroku.
 Commands :
 
 !tg [username] [time] : Mutes someone for [time] seconds (max 15). Also makes the bot broadcast a TTS message about muting the person.
