@@ -17,3 +17,4 @@ Commands :
 Sometimes, we like playing on Wolfy.fr with friends. This game is most fun when 10+ people play it, and it was sometimes hard to find people willing to play. When asked about it, the same people told us they wanted to play but had no way to know when games were going to happen.
 That's what the sendlist is about : people subscribe by putting a Reaction on a specific message. The subscribed users are then stored on Firebase.
 Everytime a message is broadcast to the subscribed users, we update the local list using the Firebase DB before sending the message.
+We are now able to broadcast a message such as "Game tonight at 10PM" to every person that plays with us, and only if they want to receive it.
